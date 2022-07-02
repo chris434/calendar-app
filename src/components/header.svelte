@@ -2,12 +2,12 @@
     import { library } from "@fortawesome/fontawesome-svg-core";
     import { faFacebook, faGoogle } from "@fortawesome/free-brands-svg-icons";
     import { faLock } from "@fortawesome/free-solid-svg-icons";
-    import { FontAwesomeIcon as Icon } from "fontawesome-svelte";
-    import LoginButton from "./login-button.svelte";
+    import Button from "./button.svelte";
 
     library.add(faFacebook, faGoogle, faLock);
     let user;
     let toggle;
+    let loginBntText = "login with";
 
     const toggleVisable = () => {
         toggle ? (toggle = false) : (toggle = true);
@@ -34,7 +34,7 @@
         <img src="" alt="" />
     {:else}
         <div>
-            <LoginButton
+            <Button
                 styles="sm:hidden block"
                 color="bg-blue-600"
                 text="login"
@@ -42,12 +42,15 @@
                 onClick={toggleVisable} />
 
             <div
-                class={`sm:static right-0 p-3 sm:bg-transparent bg-neutral-200 posision-bottom sm:flex ${toggle ? ' absolute' : 'hidden'}`}>
-                <LoginButton color="bg-red-500" icon={faGoogle} />
+                class={`sm:static right-0 p-3 sm:bg-transparent bg-neutral-200 posision-bottom z-10 sm:flex ${toggle ? ' absolute' : 'hidden'}`}>
+                <Button
+                    color="bg-red-500"
+                    text={loginBntText}
+                    icon={faGoogle} />
                 <div class="text-center place-self-center">
                     <b class="mx-2.5 sm:text-white">or</b>
                 </div>
-                <LoginButton color="bg-blue-600" icon={faFacebook} />
+                <Button text={loginBntText} icon={faFacebook} />
             </div>
         </div>
     {/if}
