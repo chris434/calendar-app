@@ -9,15 +9,15 @@
     } from "@fortawesome/free-solid-svg-icons";
     import { FontAwesomeIcon as Icon } from "fontawesome-svelte";
     import Button from "./button.svelte";
+    import { toggles, updateToggle } from "../stores/toggle-store.js";
 
     library.add(faCalendar, faChevronRight, faChevronLeft, faPencil, faBars);
     let options = ["Year", "Month", "Week", "Day"];
-    let toggles = { menu: false, name: false };
-    const switchToggle = (e) => {
-        const { id } = e.target;
-        console.log(e.target);
-        return toggles[id] ? (toggles[id] = false) : (toggles[id] = true);
-    };
+
+    let togglesValue;
+    toggles.subscribe((value) => {
+        togglesValue = value;
+    });
 </script>
 
 <style>
@@ -34,15 +34,15 @@
 
 <nav class="relative items-center flex justify-between border-b-2 border-black">
     <Button
-        id="name"
+        id="nameToggle"
         styles="sm:hidden"
         textColor="text-black"
         color="bg-transparent"
-        onClick={switchToggle}
+        onClick={updateToggle}
         icon={faPencil} />
 
     <div
-        class={` items-center sm:static gap-3 p-3 sm:bg-transparent bg-neutral-200 posision-bottom-name ${toggles.name ? 'absolute sm:flex' : 'sm:flex hidden'}`}>
+        class={` items-center sm:static gap-3 p-3 sm:bg-transparent bg-neutral-200 posision-bottom-name ${togglesValue.nameToggle ? 'absolute sm:flex' : 'sm:flex hidden'}`}>
         <div class="sm:block hidden">
             <Icon icon={faPencil} />
         </div>
@@ -61,7 +61,7 @@
             textColor="text-black" />
     </div>
     <div
-        class={`sm:static sm:flex-row right-0 p-3 flex flex-col posision-bottom-menu sm:bg-transparent bg-neutral-200   gap-3 ${toggles.menu ? 'absolute' : 'sm:flex hidden'}`}>
+        class={`sm:static sm:flex-row right-0 p-3 flex flex-col posision-bottom-menu sm:bg-transparent bg-neutral-200   gap-3 ${togglesValue.menuToggle ? 'absolute' : 'sm:flex hidden'}`}>
         <select class="block" value="Month" name="" id="">
             {#each options as option}
                 <option value={option}>{option}</option>
@@ -71,10 +71,10 @@
     </div>
 
     <Button
-        id="menu"
+        id="menuToggle"
         styles=" sm:hidden"
         color="bg-transparent"
         textColor="text-black"
-        onClick={switchToggle}
+        onClick={updateToggle}
         icon={faBars} />
 </nav>

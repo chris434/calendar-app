@@ -3,15 +3,16 @@
     import { faFacebook, faGoogle } from "@fortawesome/free-brands-svg-icons";
     import { faLock } from "@fortawesome/free-solid-svg-icons";
     import Button from "./button.svelte";
+    import { toggles, updateToggle } from "../stores/toggle-store.js";
 
     library.add(faFacebook, faGoogle, faLock);
     let user;
-    let toggle;
     let loginBntText = "login with";
 
-    const toggleVisable = () => {
-        toggle ? (toggle = false) : (toggle = true);
-    };
+    let togglesValue;
+    toggles.subscribe((value) => {
+        togglesValue = value;
+    });
 </script>
 
 <style>
@@ -35,14 +36,15 @@
     {:else}
         <div>
             <Button
+                id="loginToggle"
                 styles="sm:hidden block"
                 color="bg-blue-600"
                 text="login"
                 icon={faLock}
-                onClick={toggleVisable} />
+                onClick={updateToggle} />
 
             <div
-                class={`sm:static right-0 p-3 sm:bg-transparent bg-neutral-200 posision-bottom z-10 sm:flex ${toggle ? ' absolute' : 'hidden'}`}>
+                class={`sm:static right-0 p-3 sm:bg-transparent bg-neutral-200 posision-bottom z-10 sm:flex ${togglesValue.loginToggle ? ' absolute' : 'hidden'}`}>
                 <Button
                     color="bg-red-500"
                     text={loginBntText}
