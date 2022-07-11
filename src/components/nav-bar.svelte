@@ -1,4 +1,5 @@
 <script>
+    import { push, location, params } from "svelte-spa-router";
     import { library } from "@fortawesome/fontawesome-svg-core";
     import {
         faCalendar,
@@ -10,11 +11,23 @@
     import { FontAwesomeIcon as Icon } from "fontawesome-svelte";
     import Button from "./button.svelte";
     import { toggles, updateToggle } from "../stores/toggle-store.js";
-    import { currentMonth, currentYear } from "../stores/time-store.js";
+    import {
+        currentMonth,
+        currentYear,
+        currentCalendarSection,
+    } from "../stores/time-store.js";
     import { months } from "../utils/time.js";
+
     library.add(faCalendar, faChevronRight, faChevronLeft, faPencil, faBars);
     let options = ["Year", "Month", "Week", "Day"];
 
+    let locationValue;
+    location.subscribe((value) => (locationValue = value));
+
+    let currentCalendarSectionValue;
+    currentCalendarSection.subscribe(
+        (value) => (currentCalendarSectionValue = value)
+    );
     let togglesValue;
     toggles.subscribe((value) => (togglesValue = value));
 
@@ -46,6 +59,19 @@
         }
 
         currentMonth.set(currentMonthValue);
+    };
+    const changeCalendarSection = (e) => {
+        e.preventDefault();
+        const { value } = e.target;
+        localStorage.setItem("currentSection", JSON.stringify(value));
+
+        push(
+            locationValue.replace(
+                currentCalendarSectionValue.toLowerCase(),
+                value.toLowerCase()
+            )
+        );
+        currentCalendarSection.set(value);
     };
 </script>
 
@@ -95,7 +121,12 @@
     </div>
     <div
         class={`sm:static sm:flex-row right-0 p-3 flex flex-col posision-bottom-menu sm:bg-transparent bg-neutral-200   gap-3 ${togglesValue.menuToggle ? 'absolute' : 'sm:flex hidden'}`}>
-        <select class="block" value="Month" name="" id="">
+        <select
+            class="block"
+            value={currentCalendarSectionValue}
+            name=""
+            id=""
+            on:change={changeCalendarSection}>
             {#each options as option}
                 <option value={option}>{option}</option>
             {/each}

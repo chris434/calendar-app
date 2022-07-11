@@ -26,6 +26,6 @@ export const getFistIndex = (month, year) => {
 }
 export const isWeekend = (day, month, year) => {
     const dayNumber = getDayNumber(day, month, year)
-    console.log(dayNumber)
+
     return dayNumber === 6 || !dayNumber ? true : false
 }
