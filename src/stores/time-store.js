@@ -6,3 +6,9 @@ export const currentMonth = writable(mouthIndex)
 export const currentYear = writable(year)
 export const currentDay = readable(`${day}/${mouth + 1}/${year}`)
 export const currentCalendarSection = writable(getLocalStorage('currentSection') || 'Month')
+export const url = readable(window.location.href)
+
+let urlValue
+
+url.subscribe(value => urlValue = value)
+console.log(urlValue)
