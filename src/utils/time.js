@@ -1,9 +1,13 @@
+import { getLocalStorage } from './local-storage'
+
 export const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', "Sunday"]
 export const abbreviatedDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+export const firstCharDays = ['M', "T", "W", "T", "F", "S", "S"]
 export const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 
 export const date = new Date();
 export const year = date.getFullYear();
+
 export const mouthIndex = date.getMonth();
 export const mouthAndYear = `${months[mouthIndex]} ${year}`
 export const day = date.getDate()
@@ -16,6 +20,8 @@ const getDayNumber = (day, month, year) => {
 }
 
 export const getFullMonth = (month, year) => {
+    month = getLocalStorage('month') ? getLocalStorage('month') : month
+    console.log(month)
     const lastDate = new Date(year, month + 1, 0).getDate()
     return Array.from({ length: lastDate }, (_, i) => i + 1)
 }

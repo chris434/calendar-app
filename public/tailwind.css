@@ -32,3 +32,11 @@
 .bg-slate-200 {
     background-color: rgb(226 232 240);
 }
+
+.grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.text-bold {
+    font-weight: bold
+}

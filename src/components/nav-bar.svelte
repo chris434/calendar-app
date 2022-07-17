@@ -1,5 +1,4 @@
 <script>
-    import { push, location, params } from "svelte-spa-router";
     import { library } from "@fortawesome/fontawesome-svg-core";
     import {
         faCalendar,
@@ -11,23 +10,17 @@
     import { FontAwesomeIcon as Icon } from "fontawesome-svelte";
     import Button from "./button.svelte";
     import { toggles, updateToggle } from "../stores/toggle-store.js";
-    import {
-        currentMonth,
-        currentYear,
-        currentCalendarSection,
-    } from "../stores/time-store.js";
+    import { currentMonth, currentYear } from "../stores/time-store.js";
     import { months } from "../utils/time.js";
-
+    import { getSectionName, push } from "../utils/location.js";
+    import { getLocalStorage } from "../utils/local-storage.js";
     library.add(faCalendar, faChevronRight, faChevronLeft, faPencil, faBars);
     let options = ["Year", "Month", "Week", "Day"];
+    let sectionValue;
+    let calendarValue;
 
-    let locationValue;
-    location.subscribe((value) => (locationValue = value));
+    let section = getSectionName();
 
-    let currentCalendarSectionValue;
-    currentCalendarSection.subscribe(
-        (value) => (currentCalendarSectionValue = value)
-    );
     let togglesValue;
     toggles.subscribe((value) => (togglesValue = value));
 
@@ -36,42 +29,54 @@
 
     let currentYearValue;
     currentYear.subscribe((value) => (currentYearValue = value));
+    switch (section) {
+        case "Month":
+            sectionValue = `${
+                months[getLocalStorage("month") || currentMonthValue]
+            } ${currentYearValue}`;
+            calendarValue = currentMonthValue;
+            break;
+        case "Year":
+            sectionValue = currentYearValue;
+            calendarValue = currentYearValue;
+            break;
+    }
 
     const changeMonth = (e) => {
         const { id: changeValue } = e.target;
 
         if (changeValue) {
-            currentMonthValue += 1;
+            calendarValue += 1;
         } else {
-            currentMonthValue -= 1;
+            calendarValue -= 1;
         }
 
-        if (currentMonthValue === 12) {
-            currentYear.update((value) => value + 1);
-            currentMonth.set(0);
-            console.log(currentMonthValue);
-            return;
-        }
-        if (currentMonthValue === -1) {
-            currentMonth.set(11);
-            currentYear.update((value) => value - 1);
-            return;
-        }
+        switch (section) {
+            case "Month":
+                if (calendarValue === 12) {
+                    currentYear.update((value) => value + 1);
+                    calendarValue = 0;
+                } else if (calendarValue === -1) {
+                    calendarValue = 11;
+                    currentYear.update((value) => value - 1);
+                }
+                currentMonth.set(calendarValue);
+                sectionValue = `${months[currentMonthValue]} ${currentYearValue}`;
 
-        currentMonth.set(currentMonthValue);
+                break;
+            case "Year":
+                currentYear.set(calendarValue);
+                sectionValue = currentYearValue;
+                break;
+
+            default:
+                break;
+        }
     };
     const changeCalendarSection = (e) => {
         e.preventDefault();
         const { value } = e.target;
-        localStorage.setItem("currentSection", JSON.stringify(value));
-
-        push(
-            locationValue.replace(
-                currentCalendarSectionValue.toLowerCase(),
-                value.toLowerCase()
-            )
-        );
-        currentCalendarSection.set(value);
+        push(value.toLowerCase());
     };
 </script>
 
@@ -111,7 +116,7 @@
             color="bg-transparent"
             icon={faChevronLeft}
             onClick={changeMonth} />
-        <div>{`${months[currentMonthValue]} ${currentYearValue}`}</div>
+        <div>{sectionValue}</div>
         <Button
             id={true}
             icon={faChevronRight}
@@ -123,7 +128,7 @@
         class={`sm:static sm:flex-row right-0 p-3 flex flex-col posision-bottom-menu sm:bg-transparent bg-neutral-200   gap-3 ${togglesValue.menuToggle ? 'absolute' : 'sm:flex hidden'}`}>
         <select
             class="block"
-            value={currentCalendarSectionValue}
+            value={section}
             name=""
             id=""
             on:change={changeCalendarSection}>
